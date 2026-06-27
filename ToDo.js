@@ -12,10 +12,10 @@ const startProgramRender = () => {
     initialDiv.appendChild(input);
     initialDiv.appendChild(buttonAdd);    
 }  
-const AddTask =() =>{
-    let normalInput = input.value.trim('')
+const addTask =() =>{
+    let normalInput = input.value.trim()
     if (normalInput!==''){
-        tasks.push (normalInput);
+        tasks.push ({text:normalInput,done:false});
         input.value = '';
         renderTasks();
     }
@@ -26,24 +26,34 @@ const renderTasks = () => {
         const miniDiv = document.createElement('div');
         const p = document.createElement('p');
         const buttonRemove = document.createElement('button');
-        p.textContent = currentTask;
+        const buttonDone = document.createElement('button')
+        p.textContent = currentTask.text;
+        if (currentTask.done){
+            p.style.textDecoration = 'line-through'
+        }
         buttonRemove.textContent = 'Remove';
+        buttonDone.textContent = currentTask.done ? 'cansel' : 'done'
+        buttonDone.addEventListener('click',()=>{
+            currentTask.done = !currentTask.done; 
+          renderTasks()
+        });
         buttonRemove.addEventListener('click',()=>{
           tasks.splice(index,1);
           renderTasks();     
     })
     miniDiv.appendChild(p);
         miniDiv.appendChild(buttonRemove);
+        miniDiv.appendChild(buttonDone);
         changetDiv.appendChild(miniDiv)
     })
-    buttonAdd.addEventListener('click',()=>{
-     AddTask()
+};
+ buttonAdd.addEventListener('click',()=>{
+     addTask()
     })
     input.addEventListener('keydown',(event)=>{
         if (event.key ==='Enter'){
-            AddTask()
+            addTask()
         }
     })
-};
 startProgramRender();
 renderTasks()
