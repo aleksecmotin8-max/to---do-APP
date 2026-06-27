@@ -12,7 +12,14 @@ const startProgramRender = () => {
     initialDiv.appendChild(input);
     initialDiv.appendChild(buttonAdd);    
 }  
-
+const AddTask =() =>{
+    let normalInput = input.value.trim('')
+    if (normalInput!==''){
+        tasks.push (normalInput);
+        input.value = '';
+        renderTasks();
+    }
+}
 const renderTasks = () => {
     changetDiv.innerHTML = '';
     tasks.forEach((currentTask, index) => {
@@ -30,11 +37,12 @@ const renderTasks = () => {
         changetDiv.appendChild(miniDiv)
     })
     buttonAdd.addEventListener('click',()=>{
-        if (input.value!==''){
-            tasks.push(input.value);
-            input.value = '';
-           renderTasks();  
-        }    
+     AddTask()
+    })
+    input.addEventListener('keydown',(event)=>{
+        if (event.key ==='Enter'){
+            AddTask()
+        }
     })
 };
 startProgramRender();
