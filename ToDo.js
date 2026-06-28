@@ -4,6 +4,7 @@ const initialDiv = document.createElement('div');
 const  changetDiv = document.createElement('div');
 const input = document.createElement('input');
 const buttonAdd = document.createElement('button');
+const inputSearch = document.createElement('input');
 buttonAdd.textContent = 'Add';
 const startProgramRender = () => {
     document.body.appendChild(all);
@@ -11,18 +12,26 @@ const startProgramRender = () => {
     all.appendChild(changetDiv);
     initialDiv.appendChild(input);
     initialDiv.appendChild(buttonAdd);    
+    initialDiv.appendChild(inputSearch );
 }  
 const addTask =() =>{
     let normalInput = input.value.trim()
     if (normalInput!==''){
         tasks.push ({text:normalInput,done:false});
         input.value = '';
-        renderTasks();
+      renderCurrentView();
     }
 }
-const renderTasks = () => {
+const renderCurrentView =() =>{
+    let query = inputSearch.value.toLowerCase();
+    let filtered = tasks.filter((item)=>{
+        return item.text.toLowerCase().includes(query)
+    });
+    renderTasks(filtered)
+}
+const renderTasks = (arr) => {
     changetDiv.innerHTML = '';
-    tasks.forEach((currentTask, index) => {
+    arr.forEach((currentTask, index) => {
         const miniDiv = document.createElement('div');
         const p = document.createElement('p');
         const buttonRemove = document.createElement('button');
@@ -35,11 +44,13 @@ const renderTasks = () => {
         buttonDone.textContent = currentTask.done ? 'cansel' : 'done'
         buttonDone.addEventListener('click',()=>{
             currentTask.done = !currentTask.done; 
-          renderTasks()
+          renderCurrentView()
         });
         buttonRemove.addEventListener('click',()=>{
-          tasks.splice(index,1);
-          renderTasks();     
+         tasks = tasks.filter((item)=>{
+         return item !== currentTask;
+         }) ;
+         renderCurrentView();
     })
     miniDiv.appendChild(p);
         miniDiv.appendChild(buttonRemove);
@@ -55,5 +66,8 @@ const renderTasks = () => {
             addTask()
         }
     })
+    inputSearch.addEventListener('input',()=>{
+      renderCurrentView();
+    })
 startProgramRender();
-renderTasks()
+renderTasks(tasks)
