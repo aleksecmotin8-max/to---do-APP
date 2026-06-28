@@ -1,4 +1,5 @@
 let tasks = [];
+let nextId = 1;
 const all = document.createElement('div');
 const initialDiv = document.createElement('div');
 const  changetDiv = document.createElement('div');
@@ -17,7 +18,8 @@ const startProgramRender = () => {
 const addTask =() =>{
     let normalInput = input.value.trim()
     if (normalInput!==''){
-        tasks.push ({text:normalInput,done:false});
+        tasks.push ({text:normalInput,done:false,id:nextId});
+        nextId++;
         input.value = '';
       renderCurrentView();
     }
@@ -48,7 +50,7 @@ const renderTasks = (arr) => {
         });
         buttonRemove.addEventListener('click',()=>{
          tasks = tasks.filter((item)=>{
-         return item !== currentTask;
+         return item.id !== currentTask.id;
          }) ;
          renderCurrentView();
     })
@@ -70,4 +72,4 @@ const renderTasks = (arr) => {
       renderCurrentView();
     })
 startProgramRender();
-renderTasks(tasks)
+renderCurrentView()
