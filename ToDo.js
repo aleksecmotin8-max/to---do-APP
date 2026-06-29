@@ -15,15 +15,49 @@ const startProgramRender = () => {
     initialDiv.appendChild(buttonAdd);    
     initialDiv.appendChild(inputSearch );
 }  
+const removeFunk =((currentTask)=>{
+    tasks = tasks.filter((item) => {
+        return item.id !== currentTask ;
+    });
+    tasksSave()
+    renderCurrentView()
+});
+const tasksSave = ()=>{
+    localStorage.setItem('tasks',JSON.stringify(tasks));
+    localStorage.setItem('nextId',JSON.stringify(nextId));
+};
+const tasksLoad = ()=>{
+   const getTask = localStorage.getItem('tasks');
+   const getId = localStorage.getItem('nextId');
+   if (getTask !== null){
+    const trueGetTask = JSON.parse(getTask)
+    tasks = trueGetTask;
+   };
+   if (getId !== null){
+    const trueGetId = JSON.parse(getId)
+    nextId = trueGetId;
+   }
+}
 const addTask =() =>{
     let normalInput = input.value.trim()
     if (normalInput!==''){
         tasks.push ({text:normalInput,done:false,id:nextId});
         nextId++;
+        tasksSave();
         input.value = '';
       renderCurrentView();
     }
-}
+};
+const toggle = ((currentTaskId) =>{
+let findedObj = tasks.find((item)=>{
+   return item.id === currentTaskId
+   
+})
+findedObj.done= !findedObj.done;
+tasksSave();
+renderCurrentView();
+})
+
 const renderCurrentView =() =>{
     let query = inputSearch.value.toLowerCase();
     let filtered = tasks.filter((item)=>{
@@ -45,14 +79,10 @@ const renderTasks = (arr) => {
         buttonRemove.textContent = 'Remove';
         buttonDone.textContent = currentTask.done ? 'cansel' : 'done'
         buttonDone.addEventListener('click',()=>{
-            currentTask.done = !currentTask.done; 
-          renderCurrentView()
+            toggle(currentTask.id)
         });
         buttonRemove.addEventListener('click',()=>{
-         tasks = tasks.filter((item)=>{
-         return item.id !== currentTask.id;
-         }) ;
-         renderCurrentView();
+         removeFunk(currentTask.id)
     })
     miniDiv.appendChild(p);
         miniDiv.appendChild(buttonRemove);
@@ -70,6 +100,7 @@ const renderTasks = (arr) => {
     })
     inputSearch.addEventListener('input',()=>{
       renderCurrentView();
-    })
+    });
+    tasksLoad()
 startProgramRender();
 renderCurrentView()
