@@ -1,106 +1,228 @@
 let tasks = [];
 let nextId = 1;
+let currentFilter = '';
+
 const all = document.createElement('div');
 const initialDiv = document.createElement('div');
-const  changetDiv = document.createElement('div');
+const changetDiv = document.createElement('div');
+
 const input = document.createElement('input');
 const buttonAdd = document.createElement('button');
 const inputSearch = document.createElement('input');
+const buttonAll = document.createElement('button');
+const buttonActive = document.createElement('button');
+const buttonCompleted = document.createElement('button');
+const buttonClearComplited = document.createElement('button');
+const pState = document.createElement('p');
+
 buttonAdd.textContent = 'Add';
+buttonAll.textContent = 'All';
+buttonActive.textContent = 'Active';
+buttonCompleted.textContent = 'completed';
+buttonClearComplited.textContent = 'clear Complited';
+
 const startProgramRender = () => {
     document.body.appendChild(all);
+
     all.appendChild(initialDiv);
     all.appendChild(changetDiv);
+
     initialDiv.appendChild(input);
-    initialDiv.appendChild(buttonAdd);    
-    initialDiv.appendChild(inputSearch );
-}  
-const removeFunk =((currentTask)=>{
-    tasks = tasks.filter((item) => {
-        return item.id !== currentTask ;
-    });
-    tasksSave()
-    renderCurrentView()
-});
-const tasksSave = ()=>{
-    localStorage.setItem('tasks',JSON.stringify(tasks));
-    localStorage.setItem('nextId',JSON.stringify(nextId));
+    initialDiv.appendChild(buttonAdd);
+    initialDiv.appendChild(inputSearch);
+    initialDiv.appendChild(buttonCompleted);
+    initialDiv.appendChild(buttonAll);
+    initialDiv.appendChild(buttonActive);
+    initialDiv.appendChild(buttonClearComplited);
+    initialDiv.appendChild(pState);
 };
-const tasksLoad = ()=>{
-   const getTask = localStorage.getItem('tasks');
-   const getId = localStorage.getItem('nextId');
-   if (getTask !== null){
-    const trueGetTask = JSON.parse(getTask)
-    tasks = trueGetTask;
-   };
-   if (getId !== null){
-    const trueGetId = JSON.parse(getId)
-    nextId = trueGetId;
-   }
-}
-const addTask =() =>{
-    let normalInput = input.value.trim()
-    if (normalInput!==''){
-        tasks.push ({text:normalInput,done:false,id:nextId});
-        nextId++;
-        tasksSave();
-        input.value = '';
-      renderCurrentView();
+
+const renderCounter = () => {
+    let counter = tasks.reduce((acc, item) => {
+        acc.all++;
+
+        if (item.done === false) {
+            acc.remainig++;
+        } else {
+            acc.completed++;
+        }
+
+        return acc;
+    }, {
+        all: 0,
+        completed: 0,
+        remainig: 0
+    });
+
+    pState.textContent =
+        'all ' + counter.all +
+        ' | complited ' + counter.completed +
+        ' | remainig ' + counter.remainig;
+};
+
+const ClearComplitedTask = () => {
+    tasks = tasks.filter((item) => {
+        return item.done === false;
+    });
+
+    updateApp();
+};
+
+const updateApp = () => {
+    tasksSave();
+    renderCurrentView();
+    renderCounter();
+};
+
+const removeTask = (currentTaskId) => {
+    tasks = tasks.filter((item) => {
+        return item.id !== currentTaskId;
+    });
+
+    updateApp();
+};
+
+const tasksSave = () => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    localStorage.setItem('nextId', JSON.stringify(nextId));
+};
+
+const tasksLoad = () => {
+    const getTask = localStorage.getItem('tasks');
+    const getId = localStorage.getItem('nextId');
+
+    if (getTask !== null) {
+        const trueGetTask = JSON.parse(getTask);
+        tasks = trueGetTask;
+    }
+
+    if (getId !== null) {
+        const trueGetId = JSON.parse(getId);
+        nextId = trueGetId;
     }
 };
-const toggle = ((currentTaskId) =>{
-let findedObj = tasks.find((item)=>{
-   return item.id === currentTaskId
-   
-})
-findedObj.done= !findedObj.done;
-tasksSave();
-renderCurrentView();
-})
 
-const renderCurrentView =() =>{
-    let query = inputSearch.value.toLowerCase();
-    let filtered = tasks.filter((item)=>{
-        return item.text.toLowerCase().includes(query)
+const addTask = () => {
+    let normalInput = input.value.trim();
+
+    if (normalInput !== '') {
+        tasks.push({
+            text: normalInput,
+            done: false,
+            id: nextId
+        });
+
+        nextId++;
+        input.value = '';
+        updateApp();
+    }
+};
+
+const toggleTask = (currentTaskId) => {
+    let findedObj = tasks.find((item) => {
+        return item.id === currentTaskId;
     });
-    renderTasks(filtered)
-}
+
+    if (findedObj === undefined) {
+        return;
+    } else {
+        findedObj.done = !findedObj.done;
+        updateApp();
+    }
+};
+
+const renderCurrentView = () => {
+    let query = inputSearch.value.toLowerCase();
+
+    let filtered = tasks.filter((item) => {
+        return item.text.toLowerCase().includes(query);
+    });
+
+    if (currentFilter === 'all') {
+    }
+
+    if (currentFilter === 'completed') {
+        filtered = filtered.filter((item) => {
+            return item.done === true;
+        });
+    }
+
+    if (currentFilter === 'active') {
+        filtered = filtered.filter((item) => {
+            return item.done === false;
+        });
+    }
+
+    renderTasks(filtered);
+};
+
 const renderTasks = (arr) => {
     changetDiv.innerHTML = '';
-    arr.forEach((currentTask, index) => {
+
+    arr.forEach((currentTask) => {
         const miniDiv = document.createElement('div');
         const p = document.createElement('p');
         const buttonRemove = document.createElement('button');
-        const buttonDone = document.createElement('button')
+        const buttonDone = document.createElement('button');
+
         p.textContent = currentTask.text;
-        if (currentTask.done){
-            p.style.textDecoration = 'line-through'
+
+        if (currentTask.done) {
+            p.style.textDecoration = 'line-through';
         }
+
         buttonRemove.textContent = 'Remove';
-        buttonDone.textContent = currentTask.done ? 'cansel' : 'done'
-        buttonDone.addEventListener('click',()=>{
-            toggle(currentTask.id)
+        buttonDone.textContent = currentTask.done ? 'cancel' : 'done';
+
+        buttonDone.addEventListener('click', () => {
+            toggleTask(currentTask.id);
         });
-        buttonRemove.addEventListener('click',()=>{
-         removeFunk(currentTask.id)
-    })
-    miniDiv.appendChild(p);
+
+        buttonRemove.addEventListener('click', () => {
+            removeTask(currentTask.id);
+        });
+
+        miniDiv.appendChild(p);
         miniDiv.appendChild(buttonRemove);
         miniDiv.appendChild(buttonDone);
-        changetDiv.appendChild(miniDiv)
-    })
-};
- buttonAdd.addEventListener('click',()=>{
-     addTask()
-    })
-    input.addEventListener('keydown',(event)=>{
-        if (event.key ==='Enter'){
-            addTask()
-        }
-    })
-    inputSearch.addEventListener('input',()=>{
-      renderCurrentView();
+        changetDiv.appendChild(miniDiv);
     });
-    tasksLoad()
+};
+
+buttonAdd.addEventListener('click', () => {
+    addTask();
+});
+
+input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        addTask();
+    }
+});
+
+inputSearch.addEventListener('input', () => {
+    renderCurrentView();
+});
+
+buttonAll.addEventListener('click', () => {
+    currentFilter = 'all';
+    renderCurrentView();
+});
+
+buttonActive.addEventListener('click', () => {
+    currentFilter = 'active';
+    renderCurrentView();
+});
+
+buttonCompleted.addEventListener('click', () => {
+    currentFilter = 'completed';
+    renderCurrentView();
+});
+
+buttonClearComplited.addEventListener('click', () => {
+    ClearComplitedTask();
+});
+
+tasksLoad();
 startProgramRender();
-renderCurrentView()
+renderCurrentView();
+renderCounter();
