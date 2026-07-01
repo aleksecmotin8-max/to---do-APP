@@ -1,6 +1,6 @@
 let tasks = [];
 let nextId = 1;
-let currentFilter = '';
+let currentFilter = 'all';
 
 const all = document.createElement('div');
 const initialDiv = document.createElement('div');
@@ -20,7 +20,18 @@ buttonAll.textContent = 'All';
 buttonActive.textContent = 'Active';
 buttonCompleted.textContent = 'completed';
 buttonClearComplited.textContent = 'clear Complited';
+all.classList.add('app');
+initialDiv.classList.add('controls');
+changetDiv.classList.add('tasls-list');
 
+input.classList.add('input');
+inputSearch.classList.add('input');
+
+buttonAdd.classList.add('button');
+buttonActive.classList.add('button');
+buttonAll.classList.add('button');
+buttonCompleted.classList.add('button');
+buttonClearComplited.classList.add('button')
 const startProgramRender = () => {
     document.body.appendChild(all);
 
@@ -36,7 +47,25 @@ const startProgramRender = () => {
     initialDiv.appendChild(buttonClearComplited);
     initialDiv.appendChild(pState);
 };
-
+const setFilter = (filterName)=>{
+    currentFilter = filterName;
+    renderCurrentView();
+    renderfilterButtons()
+}
+const renderfilterButtons = () =>{
+    buttonActive.classList.remove('active-filter');
+    buttonAll.classList.remove('active-filter');
+    buttonCompleted.classList.remove('active-filter');
+    if (currentFilter === 'all'){
+        buttonAll.classList.add('active-filter');
+    }
+    if(currentFilter === 'active'){
+        buttonActive.classList.add('active-filter');
+    }
+    if(currentFilter ==='completed'){
+        buttonCompleted.classList.add('active-filter')
+    }
+}
 const renderCounter = () => {
     let counter = tasks.reduce((acc, item) => {
         acc.all++;
@@ -164,11 +193,13 @@ const renderTasks = (arr) => {
         const p = document.createElement('p');
         const buttonRemove = document.createElement('button');
         const buttonDone = document.createElement('button');
+        miniDiv.classList.add('task-card');
+        p.classList.add('task-text')
 
         p.textContent = currentTask.text;
 
         if (currentTask.done) {
-            p.style.textDecoration = 'line-through';
+           miniDiv.classList.add('done-task');
         }
 
         buttonRemove.textContent = 'Remove';
@@ -204,18 +235,15 @@ inputSearch.addEventListener('input', () => {
 });
 
 buttonAll.addEventListener('click', () => {
-    currentFilter = 'all';
-    renderCurrentView();
+   setFilter('all')
 });
 
 buttonActive.addEventListener('click', () => {
-    currentFilter = 'active';
-    renderCurrentView();
+   setFilter('active')
 });
 
 buttonCompleted.addEventListener('click', () => {
-    currentFilter = 'completed';
-    renderCurrentView();
+   setFilter('completed')
 });
 
 buttonClearComplited.addEventListener('click', () => {
@@ -226,3 +254,4 @@ tasksLoad();
 startProgramRender();
 renderCurrentView();
 renderCounter();
+renderfilterButtons();

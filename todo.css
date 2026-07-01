@@ -1,0 +1,49 @@
+*{
+    box-sizing: border-box;
+}
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#111827;
+    color:white
+}
+.app{
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+    background:#1f2937;
+    border-radius: 16px;
+}
+.controls{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:20px
+}
+.active-filter {
+    background: #4CAF50;
+    color: white;
+}
+.input{
+    padding:10px;
+    border:1px solid #374151;
+    border-radius: 8px;
+    color:pink;
+}
+.button{
+    padding:10px 12px;
+    border:0;
+    border-radius: 8px;
+    margin-bottom:8px;
+    background:#374151;
+    color:white;
+    cursor:pointer
+}
+.button:hover{
+    background:#8a2608
+}
+.done-task .task-text{
+    text-decoration: line-through;}
+.task-text{
+    margin:0
+}
